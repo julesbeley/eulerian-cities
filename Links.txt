@@ -1,2 +1,0 @@
-http://brooksandrew.github.io/simpleblog/articles/intro-to-graph-optimization-solving-cpp/ 
-https://pypi.org/project/postman_problems/ 
