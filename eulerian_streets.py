@@ -1,7 +1,7 @@
+import networkx as nx
 import osmnx as ox
 import geopandas as gpd
 from shapely.geometry import Point
-import networkx as nx
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from lxml import etree
@@ -57,7 +57,8 @@ def animate_from_path(
     x, y = x[::increment], y[::increment]
     
     plt.ioff()
-    fig, ax = plt.subplots(figsize=(10, 10))
+    
+    fig, ax = plt.subplots(figsize=(5, 5))
 
     for key, spine in ax.spines.items():
         spine.set_visible(False)
@@ -69,6 +70,7 @@ def animate_from_path(
                    labelbottom=False)
 
     p = 200
+    
     ax.set_xlim([min(x)-p, max(x)+p])
     ax.set_ylim([min(y)-p, max(y)+p])
 
@@ -80,12 +82,26 @@ def animate_from_path(
         alpha=0.5
     )
 
-    point, = ax.plot([], [], 'ro')
+    point, = ax.plot(
+        [], 
+        [], 
+        'ro', 
+        ms=4
+    )
+    
+    line, = ax.plot(
+        [], 
+        [], 
+        color='red', 
+        alpha=0.2, 
+        lw=4
+    )
 
     
     def animate(i):
         point.set_data(x[i], y[i])
-        return point,
+        line.set_data(x[:i],y[:i])
+        return point, line
 
     
     animation = FuncAnimation(
