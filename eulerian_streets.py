@@ -38,6 +38,7 @@ def animate_from_path(
     lon_lat_path,
     original_edges,
     file_name,
+    fig_size,
     frame_share,
     dpi
 ):
@@ -58,7 +59,7 @@ def animate_from_path(
     
     plt.ioff()
     
-    fig, ax = plt.subplots(figsize=(5, 5))
+    fig, ax = plt.subplots(figsize=(fig_size, fig_size))
 
     for key, spine in ax.spines.items():
         spine.set_visible(False)
@@ -79,14 +80,16 @@ def animate_from_path(
     bg_edges.plot(
         ax=ax, 
         color='black', 
-        alpha=0.5
+        alpha=0.5,
+        lw=1/5*fig_size
     )
 
     point, = ax.plot(
         [], 
         [], 
-        'ro', 
-        ms=4
+        color='red',
+        marker='o',
+        ms=4/5*fig_size
     )
     
     line, = ax.plot(
@@ -94,7 +97,7 @@ def animate_from_path(
         [], 
         color='red', 
         alpha=0.2, 
-        lw=4
+        lw=4/5*fig_size
     )
 
     
@@ -128,6 +131,7 @@ def eulerian_path_from_place(
     start_lon_lat = None,
     save_path_as_gpx=False,
     save_animation=False,
+    animation_fig_size=5,
     animation_frame_share=1,
     animation_dpi=80
 ):
@@ -203,6 +207,7 @@ def eulerian_path_from_place(
             lon_lat_path,
             original_edges,
             query,
+            animation_fig_size,
             animation_frame_share,
             animation_dpi
         )
