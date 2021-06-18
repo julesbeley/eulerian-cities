@@ -10,7 +10,7 @@ from lxml import etree
 def lon_lat_path_to_gpx(lon_lat_path, filename):
     
     """
-    Write the list of lat,lon coordinates to a 
+    Write the list of lon, lat coordinates to a 
     GPX (XML) file.
     """
     
@@ -48,7 +48,7 @@ def animate_from_path(
     dpi
 ):
     """
-    Create GIF animation of path from lat,lon
+    Create GIF animation of path from lon, lat
     coordinates. Projects the points in the path to UTM
     and uses the GeoDataFrame.plot() method to plot the
     background edges.
