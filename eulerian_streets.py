@@ -1,19 +1,24 @@
 import networkx as nx
 import osmnx as ox
 import geopandas as gpd
-from shapely.geometry import Point
+from shapely.geometry import Point, LineString
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from lxml import etree
 
 
-def lon_lat_to_gpx(lon_lat, filename):
+def lon_lat_path_to_gpx(lon_lat_path, filename):
+    
+    """
+    Write the list of lat,lon coordinates to a 
+    GPX (XML) file.
+    """
     
     track = etree.Element('trk')
     doc = etree.ElementTree(track)
     segment = etree.SubElement(track, 'trkseg')
 
-    for point in lon_lat:
+    for point in lon_lat_path:
         lon, lat = point
         
         point = etree.SubElement(
@@ -42,6 +47,12 @@ def animate_from_path(
     frame_share,
     dpi
 ):
+    """
+    Create GIF animation of path from lat,lon
+    coordinates. Projects the points in the path to UTM
+    and uses the GeoDataFrame.plot() method to plot the
+    background edges.
+    """
     
     points = [Point(x, y) for x, y in lon_lat_path]
     series = gpd.GeoSeries(points)
@@ -135,6 +146,11 @@ def eulerian_path_from_place(
     animation_frame_share=1,
     animation_dpi=80
 ):
+    """
+    Return Eulerian path LineString from 
+    OSMnx.graph.graph_from_place query. The query 
+    must be geocodable and have polygon boundaries.  
+    """
     
     city = ox.graph.graph_from_place(
         query, 
@@ -200,7 +216,7 @@ def eulerian_path_from_place(
             step_dic[edge] = (step + 1) % n_edges
             
     if save_path_as_gpx == True:
-        lon_lat_to_gpx(lon_lat_path, query)
+        lon_lat_path_to_gpx(lon_lat_path, query)
         
     if save_animation == True:
         animate_from_path(
@@ -212,4 +228,6 @@ def eulerian_path_from_place(
             animation_dpi
         )
                     
+    lon_lat_path = LineString(lon_lat_path)
+    
     return lon_lat_path
