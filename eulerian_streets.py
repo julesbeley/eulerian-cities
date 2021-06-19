@@ -147,8 +147,8 @@ def eulerian_path_from_place(
     animation_dpi=80
 ):
     """
-    Return Eulerian path LineString from 
-    OSMnx.graph.graph_from_place query. The query 
+    Return Eulerian path LineString from query which is 
+    passed to OSMnx.graph.graph_from_place. The query 
     must be geocodable and have polygon boundaries.  
     """
     
