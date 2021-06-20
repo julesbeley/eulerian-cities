@@ -7,7 +7,7 @@ from matplotlib.animation import FuncAnimation
 from lxml import etree
 
 
-def lon_lat_path_to_gpx(lon_lat_path, filename):
+def lon_lat_trail_to_gpx(lon_lat_trail, filename):
     
     """
     Write the list of lon, lat coordinates to a 
@@ -18,7 +18,7 @@ def lon_lat_path_to_gpx(lon_lat_path, filename):
     doc = etree.ElementTree(track)
     segment = etree.SubElement(track, 'trkseg')
 
-    for point in lon_lat_path:
+    for point in lon_lat_trail:
         lon, lat = point
         
         point = etree.SubElement(
@@ -39,8 +39,8 @@ def lon_lat_path_to_gpx(lon_lat_path, filename):
     )
 
 
-def animate_from_path(
-    lon_lat_path,
+def animate_from_trail(
+    lon_lat_trail,
     original_edges,
     file_name,
     fig_size,
@@ -54,7 +54,7 @@ def animate_from_path(
     background edges.
     """
     
-    points = [Point(x, y) for x, y in lon_lat_path]
+    points = [Point(x, y) for x, y in lon_lat_trail]
     series = gpd.GeoSeries(points)
 
     gdf = gpd.GeoDataFrame(geometry=series,
@@ -216,7 +216,7 @@ def eulerian_trail_from_place(
             
     origin_id = trail[0][0]
     origin_node = original_nodes.loc[origin_id]
-    lon_lat_path = [(origin_node.x, origin_node.y)]
+    lon_lat_trail = [(origin_node.x, origin_node.y)]
     
     index = original_edges.index
     step_dic = {edge:0 for edge in trail}
@@ -230,9 +230,9 @@ def eulerian_trail_from_place(
         
         coords = list(geom.iloc[step].coords)
 
-        test_order = lon_lat_path[-1] == coords[0]  
+        test_order = lon_lat_trail[-1] == coords[0]  
         order = 1 if test_order else -1
-        lon_lat_path.extend(coords[::order])
+        lon_lat_trail.extend(coords[::order])
 
         n_edges = len(gdf_edges)
 
@@ -240,11 +240,11 @@ def eulerian_trail_from_place(
             step_dic[edge] = (step + 1) % n_edges
             
     if save_trail_as_gpx == True:
-        lon_lat_path_to_gpx(lon_lat_path, query)
+        lon_lat_trail_to_gpx(lon_lat_trail, query)
         
     if save_animation == True:
-        animate_from_path(
-            lon_lat_path,
+        animate_from_trail(
+            lon_lat_trail,
             original_edges,
             query,
             animation_fig_size,
@@ -252,6 +252,6 @@ def eulerian_trail_from_place(
             animation_dpi
         )
                     
-    lon_lat_path = LineString(lon_lat_path)
+    lon_lat_trail = LineString(lon_lat_trail)
     
-    return lon_lat_path
+    return lon_lat_trail
