@@ -135,11 +135,42 @@ def animate_from_path(
         fps=fps
     )
     
+
+def get_source_node(
+    start_lon_lat,
+    original_edge_gdf,
+    original_node_gdf
+):
+    """
+    Return closest OSM node in street network, when a 
+    custom lon,lat starting point is provided by user.
+    """
+    
+    start_point = Point(start_lon_lat)
+    start_lon_lat_series = gpd.GeoSeries([start_point])
+
+    start_lon_lat_gdf = gpd.GeoDataFrame(
+        geometry=start_lon_lat_series,
+        crs=original_edge_gdf.crs
+    )
+
+    start_lon_lat_gdf = ox.project_gdf(start_lon_lat_gdf)
+    projected_nodes = ox.project_gdf(original_node_gdf)
+
+    start_geom = start_lon_lat_gdf.geometry.iloc[0]
+    geoms = projected_nodes.geometry
+
+    distances = geoms.apply(lambda x: x.distance(start_geom))
+    source = distances.idxmin()
+    
+    return source
+    
     
 def eulerian_path_from_place(
     query, 
-    network_type='all_private', 
-    start_lon_lat = None,
+    network_type='all_private',
+    path_type='circuit',
+    start_lon_lat=None,
     save_path_as_gpx=False,
     save_animation=False,
     animation_fig_size=5,
@@ -147,9 +178,9 @@ def eulerian_path_from_place(
     animation_dpi=80
 ):
     """
-    Return Eulerian path LineString from query which is 
-    passed to OSMnx.graph.graph_from_place. The query 
-    must be geocodable and have polygon boundaries.  
+    Return Eulerian circuit or path as LineString, from city name. 
+    The query is passed to OSMnx.graph.graph_from_place. It must 
+    be geocodable and have polygon boundaries.  
     """
     
     city = ox.graph.graph_from_place(
@@ -157,41 +188,35 @@ def eulerian_path_from_place(
         network_type=network_type
     )
     
-    city = city.to_undirected()    
-    city_eulerized = nx.eulerize(city)
-    
+    city = city.to_undirected()
     original_nodes, original_edges = ox.graph_to_gdfs(city)
     
-    if start_lon_lat is None:
-        path = list(nx.eulerian_circuit(city_eulerized))
-        origin_node = original_nodes.iloc[0]
+    if start_lon_lat is not None:
+        source = get_source_node(
+            start_lon_lat,
+            original_edges,
+            original_nodes
+        )
         
     else:
-        start_point = Point(start_lon_lat)
-        start_lon_lat_series = gpd.GeoSeries([start_point])
-        
-        start_lon_lat_gdf = gpd.GeoDataFrame(
-            geometry=start_lon_lat_series,
-            crs=original_edges.crs
-        )
-        
-        start_lon_lat_gdf = ox.project_gdf(start_lon_lat_gdf)
-        projected_nodes = ox.project_gdf(original_nodes)
-
-        start_geom = start_lon_lat_gdf.geometry.iloc[0]
-        geoms = projected_nodes.geometry
-        
-        distances = geoms.apply(lambda x: x.distance(start_geom))
-        source = distances.idxmin()
-        
-        circuit = nx.eulerian_circuit(
-            city_eulerized,
-            source=source
-        )
-        
-        path = list(circuit)
-        origin_node = original_nodes.loc[source]
+        source = None
     
+    if path_type == 'path':
+        if nx.has_eulerian_path(city):
+            path = list(nx.eulerian_path(city,source=source))
+            
+        else:
+            raise nx.NetworkXError('Graph has no Eulerian paths.')
+            
+    if path_type == 'circuit':      
+        if not nx.is_eulerian(city):
+            city = nx.eulerize(city)
+
+        path = list(nx.eulerian_circuit(city,source=source))
+            
+    origin_id = path[0][0]
+    origin_node = original_nodes.loc[origin_id]
+
     lon_lat_path = [(origin_node.x, origin_node.y)]
     
     index = original_edges.index
