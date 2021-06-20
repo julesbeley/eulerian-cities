@@ -48,8 +48,8 @@ def animate_from_path(
     dpi
 ):
     """
-    Create GIF animation of path from lon, lat
-    coordinates. Projects the points in the path to UTM
+    Create GIF animation of trail from lon, lat
+    coordinates. Projects the points in the trail to UTM
     and uses the GeoDataFrame.plot() method to plot the
     background edges.
     """
@@ -166,12 +166,12 @@ def get_source_node(
     return source
     
     
-def eulerian_path_from_place(
+def eulerian_trail_from_place(
     query, 
     network_type='all_private',
-    path_type='circuit',
+    trail_type='circuit',
     start_lon_lat=None,
-    save_path_as_gpx=False,
+    save_trail_as_gpx=False,
     save_animation=False,
     animation_fig_size=5,
     animation_frame_share=1,
@@ -201,28 +201,27 @@ def eulerian_path_from_place(
     else:
         source = None
     
-    if path_type == 'path':
+    if trail_type == 'path':
         if nx.has_eulerian_path(city):
-            path = list(nx.eulerian_path(city,source=source))
+            trail = list(nx.eulerian_path(city,source=source))
             
         else:
             raise nx.NetworkXError('Graph has no Eulerian paths.')
             
-    if path_type == 'circuit':      
+    if trail_type == 'circuit':      
         if not nx.is_eulerian(city):
             city = nx.eulerize(city)
 
-        path = list(nx.eulerian_circuit(city,source=source))
+        trail = list(nx.eulerian_circuit(city,source=source))
             
-    origin_id = path[0][0]
+    origin_id = trail[0][0]
     origin_node = original_nodes.loc[origin_id]
-
     lon_lat_path = [(origin_node.x, origin_node.y)]
     
     index = original_edges.index
-    step_dic = {edge:0 for edge in path}
+    step_dic = {edge:0 for edge in trail}
     
-    for edge in path:
+    for edge in trail:
         is_edge = [set(edge).issubset(i) for i in index]  
         gdf_edges = original_edges[is_edge]
         
@@ -240,7 +239,7 @@ def eulerian_path_from_place(
         if n_edges > 1:
             step_dic[edge] = (step + 1) % n_edges
             
-    if save_path_as_gpx == True:
+    if save_trail_as_gpx == True:
         lon_lat_path_to_gpx(lon_lat_path, query)
         
     if save_animation == True:
