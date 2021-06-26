@@ -7,7 +7,11 @@ from matplotlib.animation import FuncAnimation
 from lxml import etree
 
 
-def lon_lat_trail_to_gpx(lon_lat_trail, filename):
+def lon_lat_trail_to_gpx(
+    query,
+    lon_lat_trail, 
+    file_path,
+):
     
     """
     Write the list of lon, lat coordinates to a 
@@ -29,10 +33,12 @@ def lon_lat_trail_to_gpx(lon_lat_trail, filename):
         )
 
     tree = track.getroottree()
-    fn = './' + filename + '.gpx'
+    
+    if file_path is None:
+        file_path = './' + query + '.gif'
     
     tree.write(
-        fn, 
+        file_path, 
         pretty_print=True,
         xml_declaration=True, 
         encoding='utf-8'
@@ -40,9 +46,10 @@ def lon_lat_trail_to_gpx(lon_lat_trail, filename):
 
 
 def animate_from_trail(
+    query,
     lon_lat_trail,
     original_edges,
-    file_name,
+    file_path,
     fig_size,
     frame_share,
     dpi
@@ -127,10 +134,12 @@ def animate_from_trail(
     )
     
     fps = 40*frame_share
-    fp = './' + file_name + '.gif'
     
+    if file_path is None:
+        file_path = './' + query + '.gif'
+           
     animation.save(
-        filename=fp, 
+        filename=file_path, 
         dpi=dpi, 
         fps=fps
     )
@@ -172,7 +181,9 @@ def eulerian_trail_from_place(
     trail_type='circuit',
     start_lon_lat=None,
     save_trail_as_gpx=False,
+    gpx_fp=None,
     save_animation=False,
+    animation_fp=None,
     animation_fig_size=5,
     animation_frame_share=1,
     animation_dpi=80
@@ -240,13 +251,18 @@ def eulerian_trail_from_place(
             step_dic[edge] = (step + 1) % n_edges
             
     if save_trail_as_gpx == True:
-        lon_lat_trail_to_gpx(lon_lat_trail, query)
+        lon_lat_trail_to_gpx(
+            query,
+            lon_lat_trail, 
+            gpx_fp,
+        )
         
     if save_animation == True:
         animate_from_trail(
+            query,
             lon_lat_trail,
             original_edges,
-            query,
+            animation_fp,
             animation_fig_size,
             animation_frame_share,
             animation_dpi
