@@ -2,7 +2,7 @@ from lxml import etree
 
 
 
-def lon_lat_trail_to_gpx(
+def trail_to_gpx(
     query,
     lon_lat_trail, 
     file_path,

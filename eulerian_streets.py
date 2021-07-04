@@ -3,7 +3,7 @@ import osmnx as ox
 import geopandas as gpd
 from shapely.geometry import Point, LineString
 from animate import animate_from_trail
-from GPX import lon_lat_trail_to_gpx
+from GPX import trail_to_gpx
 
 
 
@@ -35,7 +35,7 @@ def get_source_node(
     source = distances.idxmin()
     
     return source
-
+    
     
 def id_trail_to_lon_lat_trail(
     id_trail,
@@ -69,13 +69,13 @@ def id_trail_to_lon_lat_trail(
             step_dic[edge] = (step + 1) % n_edges
         
     return lon_lat_trail
-    
-# add "quiet" argument for saving only
+
     
 def eulerian_trail_from_place(
     query,
+    quiet=False,
     query_type='place',
-    network_type='all_private',
+    network_type='walk',
     trail_type='circuit',
     start_lon_lat=None,
     save_trail_as_gpx=False,
@@ -147,7 +147,7 @@ def eulerian_trail_from_place(
     )
             
     if save_trail_as_gpx == True:
-        lon_lat_trail_to_gpx(
+        trail_to_gpx(
             query,
             lon_lat_trail, 
             gpx_fp,
@@ -166,4 +166,6 @@ def eulerian_trail_from_place(
                     
     lon_lat_trail = LineString(lon_lat_trail)
     
-    return lon_lat_trail
+    if not quiet:
+        return lon_lat_trail
+    
