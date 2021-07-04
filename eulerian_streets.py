@@ -35,8 +35,41 @@ def get_source_node(
     source = distances.idxmin()
     
     return source
+
     
-# separate OSM_ID trail to lat/lon trail as function
+def id_trail_to_lon_lat_trail(
+    id_trail,
+    original_nodes,
+    original_edges
+):
+    
+    origin_id = id_trail[0][0]
+    origin_node = original_nodes.loc[origin_id]
+    lon_lat_trail = [(origin_node.x, origin_node.y)]
+    
+    index = original_edges.index
+    step_dic = {edge:0 for edge in id_trail}
+    
+    for edge in id_trail:
+        is_edge = [set(edge).issubset(i) for i in index]  
+        gdf_edges = original_edges[is_edge]
+        
+        geom = gdf_edges.geometry   
+        step = step_dic[edge]
+        
+        coords = list(geom.iloc[step].coords)
+
+        test_order = lon_lat_trail[-1] == coords[0]  
+        order = 1 if test_order else -1
+        lon_lat_trail.extend(coords[::order])
+
+        n_edges = len(gdf_edges)
+
+        if n_edges > 1:
+            step_dic[edge] = (step + 1) % n_edges
+        
+    return lon_lat_trail
+    
 # add "quiet" argument for saving only
     
 def eulerian_trail_from_place(
@@ -96,7 +129,7 @@ def eulerian_trail_from_place(
     
     if trail_type == 'path':
         if nx.has_eulerian_path(city):
-            trail = list(nx.eulerian_path(city,source=source))
+            id_trail = list(nx.eulerian_path(city,source=source))
             
         else:
             raise nx.NetworkXError('Graph has no Eulerian paths.')
@@ -105,32 +138,13 @@ def eulerian_trail_from_place(
         if not nx.is_eulerian(city):
             city = nx.eulerize(city)
 
-        trail = list(nx.eulerian_circuit(city,source=source))
-            
-    origin_id = trail[0][0]
-    origin_node = original_nodes.loc[origin_id]
-    lon_lat_trail = [(origin_node.x, origin_node.y)]
-    
-    index = original_edges.index
-    step_dic = {edge:0 for edge in trail}
-    
-    for edge in trail:
-        is_edge = [set(edge).issubset(i) for i in index]  
-        gdf_edges = original_edges[is_edge]
+        id_trail = list(nx.eulerian_circuit(city,source=source))
         
-        geom = gdf_edges.geometry   
-        step = step_dic[edge]
-        
-        coords = list(geom.iloc[step].coords)
-
-        test_order = lon_lat_trail[-1] == coords[0]  
-        order = 1 if test_order else -1
-        lon_lat_trail.extend(coords[::order])
-
-        n_edges = len(gdf_edges)
-
-        if n_edges > 1:
-            step_dic[edge] = (step + 1) % n_edges
+    lon_lat_trail = id_trail_to_lon_lat_trail(
+        id_trail,
+        original_nodes,
+        original_edges
+    )
             
     if save_trail_as_gpx == True:
         lon_lat_trail_to_gpx(
