@@ -42,6 +42,11 @@ def id_trail_to_lon_lat_trail(
     original_nodes,
     original_edges
 ):
+    """
+    Convert list of OSM_ID tuples to list of coordinates. When
+    several edges connect two nodes, make sure each edge is visited
+    at least once. 
+    """
     
     origin_id = id_trail[0][0]
     origin_node = original_nodes.loc[origin_id]
