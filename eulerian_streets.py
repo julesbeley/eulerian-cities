@@ -36,9 +36,12 @@ def get_source_node(
     
     return source
     
+# separate OSM_ID trail to lat/lon trail as function
+# add "quiet" argument for saving only
     
 def eulerian_trail_from_place(
-    query, 
+    query,
+    query_type='place',
     network_type='all_private',
     trail_type='circuit',
     start_lon_lat=None,
@@ -51,15 +54,32 @@ def eulerian_trail_from_place(
     animation_dpi=80
 ):
     """
-    Return Eulerian circuit or path as LineString, from city name. 
-    The query is passed to OSMnx.graph.graph_from_place. It must 
-    be geocodable and have polygon boundaries.  
+    Return Eulerian circuit or path as LineString, from city name, bounding box,
+    or (address, dist) tuple. Queries are passed to ox.graph.graph_from_place, 
+    ox.graph.graph_from_bbox, or ox.graph.graph_from_address. If the query is a 
+    place name, it must be geocodable and have polygon boundaries. If the query
+    is a bounding box, it must be in (north, south, east, west) format. If
+    the query is an address, it must take the form (address, dist) with
+    dist the distance from the address within which nodes will be retained.
     """
     
-    city = ox.graph.graph_from_place(
-        query, 
-        network_type=network_type
-    )
+    if query_type == 'place':
+        city = ox.graph.graph_from_place(
+            query, 
+            network_type=network_type
+        )
+        
+    elif query_type == 'bbox':
+        city = ox.graph.graph_from_bbox(
+            *query, 
+            network_type=network_type
+        )
+    
+    elif query_type == 'address':
+        city = ox.graph.graph_from_address(
+            *query, 
+            network_type=network_type
+        )
     
     city = city.to_undirected()
     original_nodes, original_edges = ox.graph_to_gdfs(city)
