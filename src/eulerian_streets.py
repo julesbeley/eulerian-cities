@@ -3,7 +3,7 @@ import osmnx as ox
 import geopandas as gpd
 from shapely.geometry import Point, LineString
 from animate import animate_from_trail
-from GPX import trail_to_gpx
+from gpx import trail_to_gpx
 
 
 
