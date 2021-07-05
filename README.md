@@ -1,4 +1,4 @@
-# Cities - Eulerian Paths
+# Eulerian cities
 
 This script returns the coordinates of a trail which visits all the streets of a given place (also known as an [Eulerian trail](https://en.wikipedia.org/wiki/Eulerian_path) in graph theory), based only on the place name. It provides support for Eulerian paths and circuits alike.
 
