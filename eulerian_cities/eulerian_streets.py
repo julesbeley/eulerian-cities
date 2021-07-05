@@ -2,8 +2,8 @@ import networkx as nx
 import osmnx as ox
 import geopandas as gpd
 from shapely.geometry import Point, LineString
-from animate import animate_from_trail
-from gpx import trail_to_gpx
+from eulerian_cities import animate
+from eulerian_cities import gpx
 
 
 
@@ -152,14 +152,14 @@ def eulerian_trail_from_place(
     )
             
     if save_trail_as_gpx == True:
-        trail_to_gpx(
+        gpx.trail_to_gpx(
             query,
             lon_lat_trail, 
             gpx_fp,
         )
         
     if save_animation == True:
-        animate_from_trail(
+        animate.animate_from_trail(
             query,
             lon_lat_trail,
             original_edges,

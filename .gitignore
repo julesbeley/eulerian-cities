@@ -1,3 +1,6 @@
 .ipynb_checkpoints
 cache
 __pycache__
+build
+dist
+eulerian_cities.egg-info
