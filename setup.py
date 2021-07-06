@@ -6,9 +6,4 @@ setup(
     url='https://github.com/julesbeley/eulerian-cities',
     packages=['eulerian_cities'],
     python_requires=">=3.6",
-    install_requires=[
-        'lxml>=4.6',
-        'networkx>=2.5',
-        'ffmpeg>=4.3'
-    ]
 )
