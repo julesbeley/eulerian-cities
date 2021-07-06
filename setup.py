@@ -7,8 +7,8 @@ setup(
     packages=['eulerian_cities'],
     python_requires=">=3.6",
     install_requires=[
-        'lxml>=4.6.3',
+        'lxml>=4.6',
         'networkx>=2.5',
-        'ffmpeg>=4.3.1'
+        'ffmpeg>=4.3'
     ]
 )
