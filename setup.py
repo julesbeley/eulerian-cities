@@ -2,5 +2,13 @@ from setuptools import setup
 
 setup(
     name='eulerian cities',
-    packages=['eulerian_cities']
+    author='Jules Beley',
+    url='https://github.com/julesbeley/eulerian-cities',
+    packages=['eulerian_cities'],
+    python_requires=">=3.6",
+    install_requires=[
+        'lxml>=4.6.3',
+        'networkx>=2.5',
+        'ffmpeg>=4.3.1'
+    ]
 )
