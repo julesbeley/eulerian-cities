@@ -4,5 +4,6 @@
 - Activate the virtual environment: conda activate ox
 - Install lxml: conda install -c anaconda lxml
 - Install networkx 2.5: conda install -c conda-forge networkx=2.5
+- Install ffmpeg: conda install -c conda-forge ffmpeg 
 - Clone: git clone https://github.com/julesbeley/eulerian-cities
 - Install: python setup.py install
