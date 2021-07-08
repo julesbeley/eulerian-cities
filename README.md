@@ -1,6 +1,6 @@
 # Eulerian cities
 
-This package allows users to generate the coordinates of a trail which visits every street in a given place (also known as an [Eulerian trail](https://en.wikipedia.org/wiki/Eulerian_path) in graph theory), based only on the place name, bounding box, or address. It provides support for Eulerian paths and circuits alike.
+This package allows users to find a trail which visits every street in a given place (also known as an [Eulerian trail](https://en.wikipedia.org/wiki/Eulerian_path) in graph theory), based only on the place name, bounding box, or address. It provides support for Eulerian paths and circuits alike.
 
 It relies on [OSMnx](https://github.com/gboeing/osmnx) to download and simplify the street network data and [NetworkX](https://github.com/networkx/networkx) to produce the path. Users can provide a custom (lat,lng) starting point. The algorithm will find the closest OSM node from which to start the path. There is also a built-in method to save a GPX file and/or a GIF animation of the Eulerian trail, such as the one below. 
 
