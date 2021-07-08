@@ -17,7 +17,7 @@ def get_source_node(
     (lat,lng or address) is provided by user.
     """
     
-    if isinstance(start,str):
+    if isinstance(start, str):
         start = ox.geocoder.geocode(query=start)
     
     start_point = Point(list(reversed(start)))
@@ -140,7 +140,7 @@ def eulerian_trail_from_place(
     
     if trail_type == 'path':
         if nx.has_eulerian_path(city):
-            id_trail = list(nx.eulerian_path(city,source=source))
+            id_trail = list(nx.eulerian_path(city, source=source))
             
         else:
             raise nx.NetworkXError('Graph has no Eulerian paths.')
@@ -149,7 +149,7 @@ def eulerian_trail_from_place(
         if not nx.is_eulerian(city):
             city = nx.eulerize(city)
 
-        id_trail = list(nx.eulerian_circuit(city,source=source))
+        id_trail = list(nx.eulerian_circuit(city, source=source))
         
     lat_lng_trail = id_trail_to_lat_lng_trail(
         id_trail,
