@@ -4,26 +4,25 @@ from lxml import etree
 
 def trail_to_gpx(
     query,
-    lon_lat_trail, 
+    lat_lng_trail, 
     file_path,
 ):
     
     """
-    Write the list of lon, lat coordinates to a 
-    GPX (XML) file.
+    Write the list of lat,lng coordinates to a GPX (XML) file.
     """
     
     track = etree.Element('trk')
     doc = etree.ElementTree(track)
     segment = etree.SubElement(track, 'trkseg')
 
-    for point in lon_lat_trail:
-        lon, lat = point
+    for point in lat_lng_trail:
+        lat, lng = point
         
         point = etree.SubElement(
             segment,
             'trkpt',
-            lon=str(lon), 
+            lon=str(lng), 
             lat=str(lat)
         )
 

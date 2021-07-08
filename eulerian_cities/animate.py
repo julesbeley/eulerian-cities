@@ -8,7 +8,7 @@ import geopandas as gpd
 
 def animate_from_trail(
     query,
-    lon_lat_trail,
+    lat_lng_trail,
     original_edges,
     file_path,
     fig_size,
@@ -16,13 +16,12 @@ def animate_from_trail(
     dpi
 ):
     """
-    Create GIF animation of trail from lon, lat
-    coordinates. Projects the points in the trail to UTM
-    and uses the GeoDataFrame.plot() method to plot the
-    background edges.
+    Create GIF animation of trail from lat,lng coordinates. Projects 
+    the points in the trail to UTM and uses the GeoDataFrame.plot() method 
+    to plot the background edges.
     """
     
-    points = [Point(x, y) for x, y in lon_lat_trail]
+    points = [Point(list(reversed(p))) for p in lat_lng_trail]
     series = gpd.GeoSeries(points)
 
     gdf = gpd.GeoDataFrame(geometry=series,
