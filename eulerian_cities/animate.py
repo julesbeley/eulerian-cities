@@ -1,6 +1,6 @@
 import osmnx as ox
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
+from matplotlib.animation import FuncAnimation, PillowWriter
 from shapely.geometry import Point
 import geopandas as gpd
 
@@ -100,6 +100,6 @@ def animate_from_trail(
            
     animation.save(
         filename=file_path, 
-        dpi=dpi, 
-        fps=fps
+        dpi=dpi,
+        writer=PillowWriter(fps=fps)
     )
