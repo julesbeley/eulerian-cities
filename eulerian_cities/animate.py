@@ -81,7 +81,7 @@ def animate_from_trail(
     
     def animate(i):
         point.set_data(x[i], y[i])
-        line.set_data(x[:i],y[:i])
+        line.set_data(x[:i], y[:i])
         return point, line
 
     
