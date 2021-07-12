@@ -1,7 +1,0 @@
-- Create virtual environment with OSMnx and dependencies:
-    - conda config --prepend channels conda-forge
-    - conda create -n ox --strict-channel-priority osmnx lxml networkx=2.5 ffmpeg
-- Activate the virtual environment: conda activate ox 
-- Clone: git clone https://github.com/julesbeley/eulerian-cities
-- Navigate to package folder: cd eulerian-cities
-- Install: python setup.py install
