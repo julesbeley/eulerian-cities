@@ -9,7 +9,6 @@ setup(
     install_requires=[
         'networkx',
         'osmnx',
-        'lxml',
-        'ffmpeg-python'
+        'lxml'
     ]
 )
