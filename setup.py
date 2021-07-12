@@ -11,7 +11,7 @@ setup(
         'osmnx>=1.1',
         'geopandas>=0.9',
         'shapely>=1.7',
-        'matplotlib'>=3.3,
+        'matplotlib>=3.3',
         'lxml>=4.6'
     ]
 )
