@@ -9,41 +9,57 @@ from eulerian_cities import gpx
 
 def get_source_node(
     start,
-    original_edge_gdf,
-    original_node_gdf
+    edges,
+    nodes
 ):
     """
     Return closest OSM node in street network, when a custom starting point
-    (lat,lng or address) is provided by user.
+    (lat,lng tuple, address, or cardinal direction) is provided by user.
     """
     
-    if isinstance(start, str):
-        start = ox.geocoder.geocode(query=start)
+    directions = ['north', 'south', 'east', 'west']
     
-    start_point = Point(list(reversed(start)))
-    start_lng_lat_series = gpd.GeoSeries([start_point])
+    if start in directions:
+        if start == 'north':
+            source = nodes.y.idxmax()
+            
+        elif start == 'south':
+            source = nodes.y.idxmin()
+            
+        elif start == 'east':
+            source = nodes.x.idxmax()
+            
+        elif start == 'west':
+            source = nodes.x.idxmin()
+            
+    else:
+        if isinstance(start, str):
+            start = ox.geocoder.geocode(query=start)
+        
+        start_point = Point(list(reversed(start)))
+        start_lng_lat_series = gpd.GeoSeries([start_point])
 
-    start_lng_lat_gdf = gpd.GeoDataFrame(
-        geometry=start_lng_lat_series,
-        crs=original_edge_gdf.crs
-    )
+        start_lng_lat_gdf = gpd.GeoDataFrame(
+            geometry=start_lng_lat_series,
+            crs=edges.crs
+        )
 
-    start_lng_lat_gdf = ox.project_gdf(start_lng_lat_gdf)
-    projected_nodes = ox.project_gdf(original_node_gdf)
+        start_lng_lat_gdf = ox.project_gdf(start_lng_lat_gdf)
+        projected_nodes = ox.project_gdf(nodes)
 
-    start_geom = start_lng_lat_gdf.geometry.iloc[0]
-    geoms = projected_nodes.geometry
+        start_geom = start_lng_lat_gdf.geometry.iloc[0]
+        geoms = projected_nodes.geometry
 
-    distances = geoms.apply(lambda x: x.distance(start_geom))
-    source = distances.idxmin()
+        distances = geoms.apply(lambda x: x.distance(start_geom))
+        source = distances.idxmin()
     
     return source
     
     
 def id_trail_to_lat_lng_trail(
     id_trail,
-    original_nodes,
-    original_edges
+    nodes,
+    edges
 ):
     """
     Convert list of OSM_ID tuples to list of coordinates. When several 
@@ -51,16 +67,16 @@ def id_trail_to_lat_lng_trail(
     """
     
     origin_id = id_trail[0][0]
-    origin_node = original_nodes.loc[origin_id]
+    origin_node = nodes.loc[origin_id]
     
     lat_lng_trail = [(origin_node.y, origin_node.x)]
     
-    index = original_edges.index
+    index = edges.index
     step_dic = {edge: 0 for edge in id_trail}
     
     for edge in id_trail:
         is_edge = [set(edge).issubset(i) for i in index]  
-        gdf_edges = original_edges[is_edge]
+        gdf_edges = edges[is_edge]
         
         geom = gdf_edges.geometry   
         step = step_dic[edge]
@@ -126,13 +142,13 @@ def eulerian_trail_from_place(
         )
     
     city = city.to_undirected()
-    original_nodes, original_edges = ox.graph_to_gdfs(city)
+    nodes, edges = ox.graph_to_gdfs(city)  
     
     if start is not None:
         source = get_source_node(
             start,
-            original_edges,
-            original_nodes
+            edges,
+            nodes
         )
         
     else:
@@ -153,8 +169,8 @@ def eulerian_trail_from_place(
         
     lat_lng_trail = id_trail_to_lat_lng_trail(
         id_trail,
-        original_nodes,
-        original_edges
+        nodes,
+        edges
     )
             
     if save_trail_as_gpx == True:
@@ -168,7 +184,7 @@ def eulerian_trail_from_place(
         animate.animate_from_trail(
             query,
             lat_lng_trail,
-            original_edges,
+            edges,
             animation_fp,
             animation_fig_size,
             animation_frame_share,
