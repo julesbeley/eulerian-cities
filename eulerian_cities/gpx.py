@@ -5,7 +5,7 @@ from lxml import etree
 def trail_to_gpx(
     query,
     lat_lng_trail, 
-    file_path,
+    file_path
 ):
     
     """
