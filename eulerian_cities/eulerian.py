@@ -177,7 +177,7 @@ def eulerian_trail_from_place(
         gpx.trail_to_gpx(
             query,
             lat_lng_trail, 
-            gpx_fp,
+            gpx_fp
         )
         
     if save_animation == True:
